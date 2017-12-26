@@ -11,7 +11,7 @@ export const asObservable = (getFirebase, path, kind, mapRef = identity, mapValu
 
   return {
     subscribe: fn => {
-      getFirebase
+      getFirebase()
         .then(f => getRef(f, path))
         .then(mapRef)
         .then(ref => {
@@ -30,7 +30,7 @@ export const asObservable = (getFirebase, path, kind, mapRef = identity, mapValu
         unsubscribe: () => {
           state.unsubscribed = true;
           if (state.ref) {
-            state.ref.off('value');
+            state.ref.off(kind);
           }
         }
       };
