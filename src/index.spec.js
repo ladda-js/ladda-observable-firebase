@@ -57,9 +57,7 @@ describe('ladda-observable-firebase', () => {
         const kind = 'value';
         const path = '/x';
         const observable = asObservable(() => Promise.resolve(fb), path, kind);
-
         const callback = sinon.spy();
-
 
         observable.subscribe(callback);
 
@@ -75,9 +73,7 @@ describe('ladda-observable-firebase', () => {
         const kind = 'value';
         const path = '/x';
         const observable = asObservable(() => Promise.resolve(fb), path, kind);
-
         const callback = sinon.spy();
-
 
         observable.subscribe(callback);
 
@@ -93,9 +89,7 @@ describe('ladda-observable-firebase', () => {
         const kind = 'value';
         const path = '/x';
         const observable = asObservable(() => Promise.resolve(fb), path, kind);
-
         const callback = sinon.spy();
-
 
         observable.subscribe(callback);
 
@@ -106,15 +100,32 @@ describe('ladda-observable-firebase', () => {
         });
       });
 
+      it('triggers subscription callback everytime firebase notifies', () => {
+        const value = {};
+        const fb = getFirebaseMock(value);
+        const kind = 'value';
+        const path = '/x';
+        const observable = asObservable(() => Promise.resolve(fb), path, kind);
+        const callback = sinon.spy();
+
+        observable.subscribe(callback);
+
+        return delay().then(() => {
+          fb.mocks.trigger();
+          fb.mocks.trigger();
+          expect(callback).to.be.calledTwice;
+          fb.mocks.trigger();
+          expect(callback).to.be.calledThrice;
+        });
+      });
+
       it('lets subscription callback know whether it is called for the first time or not', () => {
         const value = {};
         const fb = getFirebaseMock(value);
         const kind = 'value';
         const path = '/x';
         const observable = asObservable(() => Promise.resolve(fb), path, kind);
-
         const callback = sinon.spy();
-
 
         observable.subscribe(callback);
 
@@ -133,12 +144,9 @@ describe('ladda-observable-firebase', () => {
         const fb = getFirebaseMock(value);
         const kind = 'value';
         const path = '/x';
-
         const identitySpy = sinon.spy(t => t);
         const observable = asObservable(() => Promise.resolve(fb), path, kind, identitySpy);
-
         const callback = sinon.spy();
-
 
         observable.subscribe(callback);
 
@@ -154,12 +162,9 @@ describe('ladda-observable-firebase', () => {
         const fb = getFirebaseMock(value);
         const kind = 'value';
         const path = '/x';
-
         const mapSpy = sinon.spy(() => mappedValue);
         const observable = asObservable(() => Promise.resolve(fb), path, kind, t => t, mapSpy);
-
         const callback = sinon.spy();
-
 
         observable.subscribe(callback);
 
@@ -168,6 +173,47 @@ describe('ladda-observable-firebase', () => {
           fb.mocks.trigger();
           expect(mapSpy).to.be.calledWith(value);
           expect(callback).to.be.calledWith(mappedValue);
+        });
+      });
+    });
+
+    describe('unsubscribe', () => {
+      it('unsubscribes', () => {
+        const value = {};
+        const fb = getFirebaseMock(value);
+        const kind = 'value';
+        const path = '/x';
+        const observable = asObservable(() => Promise.resolve(fb), path, kind);
+        const callback = sinon.spy();
+
+        const subscription = observable.subscribe(callback);
+
+        return delay().then(() => {
+          fb.mocks.trigger();
+          expect(callback).to.be.calledOnce;
+
+          subscription.unsubscribe();
+
+          expect(fb.mocks.ref.off).to.be.calledWith(kind);
+
+          fb.mocks.trigger();
+          expect(callback).to.be.calledOnce;
+        });
+      });
+
+      it('never registers on a ref, when unsubscribed before init finishes', () => {
+        const value = {};
+        const fb = getFirebaseMock(value);
+        const kind = 'value';
+        const path = '/x';
+        const observable = asObservable(() => Promise.resolve(fb), path, kind);
+        const callback = sinon.spy();
+
+        const subscription = observable.subscribe(callback);
+        subscription.unsubscribe();
+
+        return delay().then(() => {
+          expect(fb.mocks.ref.on).not.to.be.called;
         });
       });
     });
