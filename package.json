@@ -8,6 +8,7 @@
     "babel-loader": "^7.0.0",
     "babel-plugin-istanbul": "^4.0.0",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-1": "^6.24.1",
     "babel-register": "^6.9.0",
     "chai": "^3.5.0",
     "coveralls": "^2.12.0",
@@ -20,12 +21,11 @@
     "rollup": "^0.53.0",
     "rollup-plugin-babel": "^3.0.3",
     "sinon": "^1.17.7",
-    "sinon-chai": "^2.8.0",
-    "webpack": "^2.4.1"
+    "sinon-chai": "^2.8.0"
   },
   "scripts": {
     "test": "env NODE_PATH=$NODE_PATH:$PWD/src NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-register --reporter spec src/*.spec.js 'src/**/*.spec.js' --require mocha.config",
-    "coverage": "env NODE_PATH=$NODE_PATH:$PWD/src nyc -x '**/*.spec.js' -x '**/*.config.js' --reporter=lcov --reporter=text mocha --compilers js:babel-register --reporter spec src/*.spec.js 'src/**/*.spec.js' --require mocha.config",
+    "coverage": "env NODE_PATH=$NODE_PATH:$PWD/src NODE_ENV=test nyc -x '**/*.spec.js' -x '**/*.config.js' --reporter=lcov --reporter=text mocha --compilers js:babel-register --reporter spec src/*.spec.js 'src/**/*.spec.js' --require mocha.config",
     "lint": "eslint src",
     "prepublish": "npm run lint && npm test && rollup -c"
   },
