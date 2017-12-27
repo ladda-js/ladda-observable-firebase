@@ -2,7 +2,7 @@
 
 import sinon from 'sinon';
 
-import { asObservable } from '.';
+import { asObservable, asObservableValue } from '.';
 
 const delay = (t = 1) => new Promise(res => setTimeout(() => res(), t));
 
@@ -67,7 +67,7 @@ describe('ladda-observable-firebase', () => {
         });
       });
 
-      it('registers a listener at the ref', () => {
+      it('registers a listener at the ref for a given kind', () => {
         const value = {};
         const fb = getFirebaseMock(value);
         const kind = 'value';
@@ -215,6 +215,21 @@ describe('ladda-observable-firebase', () => {
         return delay().then(() => {
           expect(fb.mocks.ref.on).not.to.be.called;
         });
+      });
+    });
+  });
+
+  describe('asObservableValue', () => {
+    it('provides a shortcut to create an observable on a value', () => {
+      const value = {};
+      const fb = getFirebaseMock(value);
+      const path = '/x';
+      const observable = asObservableValue(() => Promise.resolve(fb), path);
+
+      observable.subscribe(t => t);
+
+      return delay().then(() => {
+        expect(fb.mocks.ref.on.args[0][0]).to.equal('value');
       });
     });
   });
