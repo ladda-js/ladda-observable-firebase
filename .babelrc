@@ -3,11 +3,17 @@
     ["env", {
       "modules": false
     }],
+    "stage-1"
   ],
   "env": {
     "test": {
-      "presets": ["env"],
-      "plugins": [ "istanbul" ]
+      "presets": [
+        "env",
+        "stage-1"
+      ],
+      "plugins": [
+        "istanbul"
+      ]
     }
   }
 }
